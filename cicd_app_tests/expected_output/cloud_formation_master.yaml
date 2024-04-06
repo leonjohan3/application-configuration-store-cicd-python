@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  AWS AppConfig infra for the application configuration store Git repo
+
+Resources:
+  DeploymentStrategy:
+    Type: AWS::AppConfig::DeploymentStrategy
+    Properties:
+      DeploymentDurationInMinutes: 0
+      Description: DeploymentStrategy for application configuration store that deploys without any delay
+      FinalBakeTimeInMinutes: 0
+      GrowthFactor: 100
+      GrowthType: LINEAR
+      Name: acs-all-at-once-with-no-bake-time
+      ReplicateTo: NONE
+
+  ApplicationRetail:
+    Type: AWS::AppConfig::Application
+    Properties:
+      Name: acs/retail
+      Description: retail
+
+  EnvironmentRetailProd:
+    Type: AWS::AppConfig::Environment
+    Properties:
+      ApplicationId: !Ref ApplicationRetail
+      Name: prod
+      Description: prod environment of the retail application
+
+  ConfigurationProfileRetailProd:
+    Type: AWS::AppConfig::ConfigurationProfile
+    Properties:
+      ApplicationId: !Ref ApplicationRetail
+      LocationUri: hosted
+      Name: prod
+      Type: AWS.Freeform
+
+  EnvironmentRetailTest:
+    Type: AWS::AppConfig::Environment
+    Properties:
+      ApplicationId: !Ref ApplicationRetail
+      Name: test
+      Description: test environment of the retail application
+
+  ConfigurationProfileRetailTest:
+    Type: AWS::AppConfig::ConfigurationProfile
+    Properties:
+      ApplicationId: !Ref ApplicationRetail
+      LocationUri: hosted
+      Name: test
+      Type: AWS.Freeform
+
+  ApplicationSalesapi:
+    Type: AWS::AppConfig::Application
+    Properties:
+      Name: acs/sales_api
+      Description: sales_api
+
+  EnvironmentSalesapiPreprod:
+    Type: AWS::AppConfig::Environment
+    Properties:
+      ApplicationId: !Ref ApplicationSalesapi
+      Name: pre-prod
+      Description: pre-prod environment of the sales_api application
+
+  ConfigurationProfileSalesapiPreprod:
+    Type: AWS::AppConfig::ConfigurationProfile
+    Properties:
+      ApplicationId: !Ref ApplicationSalesapi
+      LocationUri: hosted
+      Name: pre-prod
+      Type: AWS.Freeform
+
+  EnvironmentSalesapiProd:
+    Type: AWS::AppConfig::Environment
+    Properties:
+      ApplicationId: !Ref ApplicationSalesapi
+      Name: prod
+      Description: prod environment of the sales_api application
+
+  ConfigurationProfileSalesapiProd:
+    Type: AWS::AppConfig::ConfigurationProfile
+    Properties:
+      ApplicationId: !Ref ApplicationSalesapi
+      LocationUri: hosted
+      Name: prod
+      Type: AWS.Freeform

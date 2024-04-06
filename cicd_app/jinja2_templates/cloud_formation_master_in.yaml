@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+  AWS AppConfig infra for the application configuration store Git repo
+
+Resources:
+  DeploymentStrategy:
+    Type: AWS::AppConfig::DeploymentStrategy
+    Properties:
+      DeploymentDurationInMinutes: 0
+      Description: DeploymentStrategy for application configuration store that deploys without any delay
+      FinalBakeTimeInMinutes: 0
+      GrowthFactor: 100
+      GrowthType: LINEAR
+      Name: acs-all-at-once-with-no-bake-time
+      ReplicateTo: NONE
+{% for application in applications %}
+  Application{{ application.cf_name|capitalize }}:
+    Type: AWS::AppConfig::Application
+    Properties:
+      Name: acs/{{ application.name }}
+      Description: {{ application.name }}
+{% for environment in application.environments %}
+  Environment{{ application.cf_name|capitalize }}{{ environment.cf_name|capitalize }}:
+    Type: AWS::AppConfig::Environment
+    Properties:
+      ApplicationId: !Ref Application{{ application.cf_name|capitalize }}
+      Name: {{ environment.name }}
+      Description: {{ environment.name }} environment of the {{ application.name }} application
+
+  ConfigurationProfile{{ application.cf_name|capitalize }}{{ environment.cf_name|capitalize }}:
+    Type: AWS::AppConfig::ConfigurationProfile
+    Properties:
+      ApplicationId: !Ref Application{{ application.cf_name|capitalize }}
+      LocationUri: hosted
+      Name: {{ environment.name }}
+      Type: AWS.Freeform
+{% endfor %}{% endfor %}

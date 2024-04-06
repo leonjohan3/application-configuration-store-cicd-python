@@ -1,0 +1,7 @@
+logging:
+  level:
+    web: INFO
+    org:
+      springframework:
+        security:
+          web: INFO

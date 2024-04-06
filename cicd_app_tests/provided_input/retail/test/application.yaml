@@ -1,0 +1,14 @@
+debug: false
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+  shutdown: graceful
+
+api:
+  config:
+    remote-cidr-filter: 127.0.0.1/32
+    max-request-body-bytes: 5MB
+    request-body-validation-permit-count: 6
+    rate-limit-bucket-size: 220 # 100 calls in 3 seconds (33 calls per sec)

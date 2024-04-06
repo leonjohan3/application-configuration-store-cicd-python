@@ -1,0 +1,30 @@
+spring:
+
+  main:
+    banner-mode: off
+
+  application:
+    admin:
+      enabled: false
+
+  jmx:
+    enabled: false
+
+  cache:
+    type: redis
+    cache-names: retail
+    redis:
+      cache-null-values: false
+      enable-statistics: true
+      use-key-prefix: false
+
+  data:
+    redis:
+      host: localhost
+      ssl:
+        enabled: true
+
+  # Determines when to output ANSI escape sequences for coloring application output (https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/ansi/AnsiOutput.Enabled.html)
+  output:
+    ansi:
+      enabled: NEVER
