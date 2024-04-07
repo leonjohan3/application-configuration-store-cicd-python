@@ -10,7 +10,6 @@ def test_build_cloud_formation_file():
 
     # when : method to be checked invocation / act
     build_cloud_formation_file.main('cicd_app_tests/provided_input', 'build')
-    # build_cloud_formation_file.main('../application-configuration-store')
 
     # then : checks and assertions / assert
     assert filecmp.cmp(f'cicd_app_tests/expected_output/{cloud_formation_file}', f'build/template.yaml', False)

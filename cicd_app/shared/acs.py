@@ -87,11 +87,11 @@ def parse_file_path(file_path):
     return tokens[-3], tokens[-2]
 
 
-def is_config_path(file_path):
-    return len(re.findall(r'/', file_path)) > 2
+def is_config_path(root_folder_count, file_path):
+    return len(re.findall(r'/', file_path)) - root_folder_count == 3
 
 
-def create_applications_list(file_path_list):
+def create_applications_list(root_folder_count, file_path_list):
     translation_table = dict.fromkeys(map(ord, '_-'), None)
     sorted_file_path = file_path_list
     sorted_file_path.sort()
@@ -101,7 +101,7 @@ def create_applications_list(file_path_list):
 
     for file_path in sorted_file_path:
 
-        if not is_config_path(file_path):
+        if not is_config_path(root_folder_count, file_path):
             continue
 
         application, environment = parse_file_path(file_path)
@@ -122,7 +122,7 @@ def create_applications_list(file_path_list):
     return applications
 
 
-def create_applications_dict(file_path_list):
+def create_applications_dict(root_folder_count, file_path_list):
     sorted_file_path = file_path_list
     sorted_file_path.sort()
     applications = dict()
@@ -131,7 +131,7 @@ def create_applications_dict(file_path_list):
 
     for file_path in sorted_file_path:
 
-        if not is_config_path(file_path):
+        if not is_config_path(root_folder_count, file_path):
             continue
 
         application, environment = parse_file_path(file_path)

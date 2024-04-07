@@ -1,10 +1,11 @@
 # Overview
-This Git repo contains the code/functionality to deploy changes to the application configuration store Git repo to AWS AppConfig.
-Also see the README.md in the application configuration store Git repo.
+This Git repo contains the CI/CD scripts to deploy changes that are made to the `application configuration store` Git repo, to AWS AppConfig.
+Also see the README.md in the `application configuration store` Git repo.
 
 # Required dependencies
 - Python
 - AWS cli
+- SAM
 
 # Resources
 - [AWS AppConfig](<https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html>)
@@ -80,7 +81,10 @@ def is_valid_config_path(file_path):
 - create python venv: python -m venv .venv --clear --prompt venv --upgrade-deps
 - activate: source .venv/bin/activate
 - install test dependencies: pip install -r cicd_app_tests/requirements.txt
-- create build folder
+- create build folder, and
+- mkdir -p cicd_app_tests/invalid_config_folder_structures/with_folder_in_place_of_a_configuration_file/my_application/my_environment/misplaced_folder/
+- mkdir -p cicd_app_tests/invalid_config_folder_structures/without_a_configuration_file/my_application/my_environment/
+- mkdir -p cicd_app_tests/invalid_config_folder_structures/without_any_environment_folders/my_application/
 - run tests: python -m pytest cicd_app_tests
 - install app dependencies: pip install -r cicd_app/requirements.txt
 - create CFormation file, template.yaml in sam folder, run: cicd_app/build_cloud_formation_file.py ../application-configuration-store sam

@@ -3,6 +3,7 @@
 __version__ = 0, 0, 1
 
 import argparse
+import re
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -13,7 +14,7 @@ def main(root_folder, template_folder):
     acs.validate_configuration_folder_structure(root_folder)
     file_path_list = list()
     acs.walk_file_tree(root_folder, acs.add_to_file_list, file_path_list)
-    applications = acs.create_applications_list(file_path_list)
+    applications = acs.create_applications_list(len(re.findall(r'/', root_folder)), file_path_list)
 
     context = {
         'applications': applications

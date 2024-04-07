@@ -16,24 +16,24 @@ def test_parse_file_path(file_path, expected_application, expected_environment):
     assert environment == expected_environment
 
 
-@pytest.mark.parametrize("file_path_list, expected_applications", [
-    (['cicd_app_tests/provided_input/sales/test/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'],
+@pytest.mark.parametrize("file_path_list, root_folder_count, expected_applications", [
+    (['cicd_app_tests/provided_input/sales/test/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'], 1,
      [{'name': 'sales', 'cf_name': 'sales', 'environments': [
          {'name': 'prod', 'cf_name': 'prod', 'file_path': 'cicd_app_tests/provided_input/sales/prod/application.yaml'},
          {'name': 'test', 'cf_name': 'test', 'file_path': 'cicd_app_tests/provided_input/sales/test/application.yaml'},
      ]}]
      ),
-    (['cicd_app_tests/sales/test/application.yaml'],
+    (['cicd_app_tests/sales/test/application.yaml'], 0,
      [{'name': 'sales', 'cf_name': 'sales', 'environments': [
          {'name': 'test', 'cf_name': 'test', 'file_path': 'cicd_app_tests/sales/test/application.yaml'},
      ]}]
      ),
-    (['cicd_app_tests/sales_backend/pre-prod/application.yaml'],
+    (['cicd_app_tests/sales_backend/pre-prod/application.yaml'], 0,
      [{'name': 'sales_backend', 'cf_name': 'salesbackend', 'environments': [
          {'name': 'pre-prod', 'cf_name': 'preprod', 'file_path': 'cicd_app_tests/sales_backend/pre-prod/application.yaml'},
      ]}]
      ),
-    (['cicd_app_tests/provided_input/sales/test/application.yaml', 'cicd_app_tests/provided_input/retail/prod/application.yaml'],
+    (['cicd_app_tests/provided_input/sales/test/application.yaml', 'cicd_app_tests/provided_input/retail/prod/application.yaml'], 1,
      [{'name': 'retail', 'cf_name': 'retail', 'environments': [
          {'name': 'prod', 'cf_name': 'prod', 'file_path': 'cicd_app_tests/provided_input/retail/prod/application.yaml'},
      ]},
@@ -43,28 +43,29 @@ def test_parse_file_path(file_path, expected_application, expected_environment):
       ]
      ),
 ])
-def test_create_applications_list(file_path_list, expected_applications):
-    applications = acs.create_applications_list(file_path_list)
+def test_create_applications_list(file_path_list, root_folder_count, expected_applications):
+    applications = acs.create_applications_list(root_folder_count, file_path_list)
     assert applications == expected_applications
 
 
-@pytest.mark.parametrize("file_path_list, expected_applications", [
-    (['cicd_app_tests/provided_input/sales/test/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'],
+@pytest.mark.parametrize("file_path_list, root_folder_count, expected_applications", [
+    (['cicd_app_tests/provided_input/sales/test/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml',
+      'cicd_app_tests/provided_input/application.yaml'], 1,
      {'sales': {'prod': 'cicd_app_tests/provided_input/sales/prod/application.yaml', 'test': 'cicd_app_tests/provided_input/sales/test/application.yaml'}}
      ),
-    (['cicd_app_tests/sales/test/application.yaml'],
+    (['cicd_app_tests/sales/test/application.yaml'], 0,
      {'sales': {'test': 'cicd_app_tests/sales/test/application.yaml'}}
      ),
-    (['cicd_app_tests/sales_backend/pre-prod/application.yaml'],
+    (['cicd_app_tests/sales_backend/pre-prod/application.yaml'], 0,
      {'sales_backend': {'pre-prod': 'cicd_app_tests/sales_backend/pre-prod/application.yaml'}}
      ),
-    (['cicd_app_tests/provided_input/sales/test/application.yaml', 'cicd_app_tests/provided_input/retail/prod/application.yaml'],
+    (['cicd_app_tests/provided_input/sales/test/application.yaml', 'cicd_app_tests/provided_input/retail/prod/application.yaml'], 1,
      {'retail': {'prod': 'cicd_app_tests/provided_input/retail/prod/application.yaml'},
       'sales': {'test': 'cicd_app_tests/provided_input/sales/test/application.yaml'}}
      ),
 ])
-def test_create_applications_dict(file_path_list, expected_applications):
-    applications = acs.create_applications_dict(file_path_list)
+def test_create_applications_dict(file_path_list, root_folder_count, expected_applications):
+    applications = acs.create_applications_dict(root_folder_count, file_path_list)
     assert applications == expected_applications
 
 
@@ -126,35 +127,35 @@ def test_validate_application_or_environment_name(name, expected_exception_messa
     assert str(exc_info.value) == f'ERROR, something is wrong, {expected_exception_message}'
 
 
-@pytest.mark.parametrize("file_path_list, expected_exception_message", [
-    (['cicd_app_tests/provided_input/sales/prod/application.yaml', 'cicd_app_tests/provided_input/sales_and_$s/test/application.yaml'],
+@pytest.mark.parametrize("file_path_list, root_folder_count, expected_exception_message", [
+    (['cicd_app_tests/provided_input/sales/prod/application.yaml', 'cicd_app_tests/provided_input/sales_and_$s/test/application.yaml'], 1,
      'invalid name: `sales_and_$s`, only alphanumeric values with underscores and dashes are '
      + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
-    (['cicd_app_tests/provided_input/sales/test_with_a_#tag/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'],
+    (['cicd_app_tests/provided_input/sales/test_with_a_#tag/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'], 1,
      'invalid name: `test_with_a_#tag`, only alphanumeric values with underscores and dashes are '
      + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
 ])
-def test_create_applications_list_with_invalid_name(file_path_list, expected_exception_message):
+def test_create_applications_list_with_invalid_name(file_path_list, root_folder_count, expected_exception_message):
     with pytest.raises(Exception) as exc_info:
         # when : method to be checked invocation / act
-        acs.create_applications_list(file_path_list)
+        acs.create_applications_list(root_folder_count, file_path_list)
 
     # then : checks and assertions / assert
     assert str(exc_info.value) == f'ERROR, something is wrong, {expected_exception_message}'
 
 
-@pytest.mark.parametrize("file_path_list, expected_exception_message", [
-    (['cicd_app_tests/provided_input/sales_and=s/test/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'],
+@pytest.mark.parametrize("file_path_list, root_folder_count, expected_exception_message", [
+    (['cicd_app_tests/provided_input/sales_and=s/test/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'], 1,
      'invalid name: `sales_and=s`, only alphanumeric values with underscores and dashes are '
      + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
-    (['cicd_app_tests/provided_input/sales/prod/application.yaml', 'cicd_app_tests/provided_input/sales/test_with_a_*/application.yaml'],
+    (['cicd_app_tests/provided_input/sales/prod/application.yaml', 'cicd_app_tests/provided_input/sales/test_with_a_*/application.yaml'], 1,
      'invalid name: `test_with_a_*`, only alphanumeric values with underscores and dashes are '
      + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
 ])
-def test_create_applications_dict_with_invalid_name(file_path_list, expected_exception_message):
+def test_create_applications_dict_with_invalid_name(file_path_list, root_folder_count, expected_exception_message):
     with pytest.raises(Exception) as exc_info:
         # when : method to be checked invocation / act
-        acs.create_applications_dict(file_path_list)
+        acs.create_applications_dict(root_folder_count, file_path_list)
 
     # then : checks and assertions / assert
     assert str(exc_info.value) == f'ERROR, something is wrong, {expected_exception_message}'
