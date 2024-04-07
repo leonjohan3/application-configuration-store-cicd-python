@@ -32,6 +32,9 @@ Also see the README.md in the `application configuration store` Git repo.
 - python -m tabnanny -v cicd_app*
 
 # Todo
+- support multiple prefixes
+- check for trailing `/` when counting `/`'s for root folder
+- test with 100 apps extracting the config making sure they compare to what is in the folder
 - freeze
 - pylint
 - pytest-cov

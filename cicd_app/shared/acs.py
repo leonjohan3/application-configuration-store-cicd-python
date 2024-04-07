@@ -76,7 +76,7 @@ def add_to_file_list(file, file_list):
 
 
 def validate_application_or_environment_name(name):
-    if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9_\-]{1,63}$', name):
+    if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9_\-]{1,59}$', name):
         raise Exception(f"ERROR, something is wrong, invalid name: `{name}`, only alphanumeric values with"
                         + " underscores and dashes are allowed, starting with an alphanumeric, and a maximum of 64 characters")
 

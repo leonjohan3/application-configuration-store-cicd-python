@@ -110,12 +110,25 @@ def main(root_folder):
     file_path_list = list()
     acs.walk_file_tree(root_folder, acs.add_to_file_list, file_path_list)
     applications_dict = acs.create_applications_dict(len(re.findall(r'/', root_folder)), file_path_list)
+    next_token = None
 
-    applications = client.list_applications()
+    while True:
+        if next_token is None:
+            applications = client.list_applications()
+        else:
+            applications = client.list_applications(NextToken=next_token)
 
-    for application in applications['Items']:
-        if re.match(r'^acs/', application['Name']) is not None:
-            process_application(application, applications_dict[application['Description']])
+        if 'NextToken' in applications:
+            next_token = applications['NextToken']
+        else:
+            next_token = None
+
+        for application in applications['Items']:
+            if re.match(r'^acs/', application['Name']) is not None:
+                process_application(application, applications_dict[application['Description']])
+
+        if next_token is None:
+            break
 
 
 if __name__ == '__main__':
