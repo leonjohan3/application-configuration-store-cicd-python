@@ -1,6 +1,7 @@
 # acs.py
 import os
 import re
+from pathlib import Path
 from stat import S_ISDIR, S_ISREG
 
 
@@ -81,17 +82,17 @@ def validate_application_or_environment_name(name):
                         + " underscores and dashes are allowed, starting with an alphanumeric, and a maximum of 64 characters")
 
 
-def parse_file_path(file_path):
-    tokens = re.split(r'/', file_path)
+def parse_file_path_to_get_application_and_environment(file_path):
+    file_path_parts = Path(file_path).parts
     # return application, environment
-    return tokens[-3], tokens[-2]
+    return file_path_parts[-3], file_path_parts[-2]
 
 
-def is_config_path(root_folder_count, file_path):
-    return len(re.findall(r'/', file_path)) - root_folder_count == 3
+def is_config_path(root_folder_part_count, file_path):
+    return len(Path(file_path).parts) - root_folder_part_count == 3
 
 
-def create_applications_list(root_folder_count, file_path_list):
+def create_applications_list(root_folder_part_count, file_path_list):
     translation_table = dict.fromkeys(map(ord, '_-'), None)
     sorted_file_path = file_path_list
     sorted_file_path.sort()
@@ -101,10 +102,10 @@ def create_applications_list(root_folder_count, file_path_list):
 
     for file_path in sorted_file_path:
 
-        if not is_config_path(root_folder_count, file_path):
+        if not is_config_path(root_folder_part_count, file_path):
             continue
 
-        application, environment = parse_file_path(file_path)
+        application, environment = parse_file_path_to_get_application_and_environment(file_path)
         validate_application_or_environment_name(application)
         validate_application_or_environment_name(environment)
 
@@ -122,7 +123,7 @@ def create_applications_list(root_folder_count, file_path_list):
     return applications
 
 
-def create_applications_dict(root_folder_count, file_path_list):
+def create_applications_dict(root_folder_part_count, file_path_list):
     sorted_file_path = file_path_list
     sorted_file_path.sort()
     applications = dict()
@@ -131,10 +132,10 @@ def create_applications_dict(root_folder_count, file_path_list):
 
     for file_path in sorted_file_path:
 
-        if not is_config_path(root_folder_count, file_path):
+        if not is_config_path(root_folder_part_count, file_path):
             continue
 
-        application, environment = parse_file_path(file_path)
+        application, environment = parse_file_path_to_get_application_and_environment(file_path)
         validate_application_or_environment_name(application)
         validate_application_or_environment_name(environment)
 
@@ -149,4 +150,13 @@ def create_applications_dict(root_folder_count, file_path_list):
         environments[environment] = file_path
 
     applications[current_application] = environments
+    return applications
+
+
+def get_next_batch_of_applications(client, next_token):
+    if next_token is None:
+        applications = client.list_applications()
+    else:
+        applications = client.list_applications(NextToken=next_token)
+
     return applications

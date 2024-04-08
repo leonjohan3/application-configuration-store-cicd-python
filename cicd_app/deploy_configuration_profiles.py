@@ -4,6 +4,8 @@ import re
 
 import boto3
 
+from shared import acs
+
 __version__ = 0, 0, 1
 
 client = boto3.client('appconfig')
@@ -91,11 +93,22 @@ def process_application(application):
 
 
 def main():
-    applications = client.list_applications()
+    next_token = None
 
-    for application in applications['Items']:
-        if re.match(r'^acs/', application['Name']) is not None:
-            process_application(application)
+    while True:
+        applications = acs.get_next_batch_of_applications(client, next_token)
+
+        if 'NextToken' in applications:
+            next_token = applications['NextToken']
+        else:
+            next_token = None
+
+        for application in applications['Items']:
+            if re.match(r'^acs/', application['Name']) is not None:
+                process_application(application)
+
+        if next_token is None:
+            break
 
 
 if __name__ == '__main__':

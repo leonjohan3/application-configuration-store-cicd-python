@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # create_configuration_profiles.py
 import argparse
+import os
 import re
+from pathlib import Path
 
 import boto3
 
@@ -109,14 +111,11 @@ def main(root_folder):
     acs.validate_configuration_folder_structure(root_folder)
     file_path_list = list()
     acs.walk_file_tree(root_folder, acs.add_to_file_list, file_path_list)
-    applications_dict = acs.create_applications_dict(len(re.findall(r'/', root_folder)), file_path_list)
+    applications_dict = acs.create_applications_dict(len(Path(root_folder).parts), file_path_list)
     next_token = None
 
     while True:
-        if next_token is None:
-            applications = client.list_applications()
-        else:
-            applications = client.list_applications(NextToken=next_token)
+        applications = acs.get_next_batch_of_applications(client, next_token)
 
         if 'NextToken' in applications:
             next_token = applications['NextToken']
@@ -135,5 +134,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser("create_configuration_profiles.py")
     parser.add_argument("root_folder", help="The root folder for the application configurations, e.g. application-configuration-store", type=str)
     args = parser.parse_args()
+    root_folder_head, root_folder_tail = os.path.split(args.root_folder)
 
-    main(args.root_folder)
+    main(root_folder_head if not root_folder_tail else os.path.join(root_folder_head, root_folder_tail))

@@ -26,8 +26,8 @@ Also see the README.md in the `application configuration store` Git repo.
 - python -m venv .venv --clear --prompt venv --upgrade-deps
 - source .venv/bin/activate
 - pip freeze -r requirements.txt > requirements-frozen.txt
-- pip install -r requirements.txt
-- pip install -r tests/requirements.txt
+- pip install -r cicd_app/requirements.txt
+- pip install -r cicd_app_tests/requirements.txt
 - python -m pytest tests -v
 - python -m tabnanny -v cicd_app*
 
@@ -35,6 +35,8 @@ Also see the README.md in the `application configuration store` Git repo.
 - support multiple prefixes
 - check for trailing `/` when counting `/`'s for root folder
 - test with 100 apps extracting the config making sure they compare to what is in the folder
+- check for folders that differ only by case
+- go app to get config on startup
 - freeze
 - pylint
 - pytest-cov
