@@ -37,6 +37,7 @@ Also see the README.md in the `application configuration store` Git repo.
 - test with 100 apps extracting the config making sure they compare to what is in the folder
 - check for folders that differ only by case
 - go app to get config on startup
+- look at Git Sync CFormation
 - freeze
 - pylint
 - pytest-cov
