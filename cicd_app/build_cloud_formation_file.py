@@ -1,5 +1,22 @@
 #!/usr/bin/env python
 # build_cloud_formation_file.py
+"""
+Builds an AWS Cloudformation file (based on the `root_folder`) that will be used to deploy the initial AppConfig resources
+example root_folder:
+├── README.md
+├── retail
+│ ├── prod
+│ │   └── application.yaml
+│ └── test
+│     └── application.yaml
+└── sales_api-ms
+    ├── pre-prod_new
+    │   └── application.yaml
+    └── prod
+        └── application.yaml
+
+level one (retail and sales_api-ms) represent the applications, level two (prod, test and pre-prod_new) represent the environments
+"""
 __version__ = 0, 0, 1
 
 import argparse

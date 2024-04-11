@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # create_configuration_profiles.py
+"""
+Creates/updates the AppConfig configuration profiles with the contents of the configuration files (application.yaml) in the `root_folder`
+"""
 import argparse
 import os
 import re
@@ -70,7 +73,7 @@ def remove_old_configuration_versions(configuration_profile, application_name):
     counter = 0
 
     for configuration_version in configuration_versions['Items']:
-        counter = counter + 1
+        counter += 1
 
         if counter > 2:
             old_configuration_versions.append(configuration_version)

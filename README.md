@@ -33,26 +33,34 @@ Also see the README.md in the `application configuration store` Git repo.
 
 # Todo
 - support multiple prefixes
-- check for trailing `/` when counting `/`'s for root folder
-- test with 100 apps extracting the config making sure they compare to what is in the folder
-- check for folders that differ only by case
+- check for trailing `/` when counting `/`'s for root folder [done]
+- test with 100 apps extracting the config making sure they compare to what is in the folder [done]
+- check for folders that differ only by case [done] - CFormation prevents the usage of duplicate resource names
+- make a note on names that differ only by case in the docs
 - go app to get config on startup
-- look at Git Sync CFormation
+- look at Git Sync CFormation [done] - not applicable to this project as the CFormation are build from the `root_folder` and does not exist in the repo 
+- implement role with least privs
+- deploy with AWS cli, not SAM
+- activate CFormation notifications
+- use/try amazoncorretto:17-alpine-jdk
+- install Android AWS console [done]
 - freeze
 - pylint
 - pytest-cov
 - add license
-- look at using git submodules
+- look at using git submodules [done] - not implemented - seen as an anti-pattern
 - look at mypy
 - figure out what characters are allowed for application and environment names and implement validation '^[a-zA-Z0-9][a-zA-Z0-9_\-]{1,63}$' [done]
 - do a perf test with 250 folders with 3 environments each and include max app and env name lengths (to make sure we do not exceed e.g. description lengths that
-  uses folder names)
+  uses folder names) [done]
 - decide what to parameterize using env variables, e.g. tags, region, etc.
 - write integration tests:
   - CFormation deploy, create configuration profiles and deploy configuration profiles, use AWS cli to get config from AppConfig and then compare with files 
   - update 2 config files, add a new project, delete an old project, add a new environment, delete an old environment, and do above
 
 # Other
+
+installing rpms: sudo yum localinstall java-11-amazon-corretto*.rpm
 
   Deployment{{ application.name|capitalize }}{{ environment.name|capitalize }}:
     Type: AWS::AppConfig::Deployment

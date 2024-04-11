@@ -109,19 +109,19 @@ def test_validate_configuration_folder_structure_with_valid_folder_structure():
 @pytest.mark.parametrize("name, expected_exception_message", [
     ('1more-than-64-characters-56789-123456789-123456789-123456789_1234',
      'invalid name: `1more-than-64-characters-56789-123456789-123456789-123456789_1234`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
     ('-starting-with-a-dash',
      'invalid name: `-starting-with-a-dash`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
     ('_starting-with-an-underscore',
      'invalid name: `_starting-with-an-underscore`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
     ('with_@_being-invalid',
      'invalid name: `with_@_being-invalid`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
     ('with some spaces',
      'invalid name: `with some spaces`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
 ])
 def test_validate_application_or_environment_name(name, expected_exception_message):
     with pytest.raises(Exception) as exc_info:
@@ -135,10 +135,10 @@ def test_validate_application_or_environment_name(name, expected_exception_messa
 @pytest.mark.parametrize("file_path_list, root_folder_part_count, expected_exception_message", [
     (['cicd_app_tests/provided_input/sales/prod/application.yaml', 'cicd_app_tests/provided_input/sales_and_$s/test/application.yaml'], 2,
      'invalid name: `sales_and_$s`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
     (['cicd_app_tests/provided_input/sales/test_with_a_#tag/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'], 2,
      'invalid name: `test_with_a_#tag`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
 ])
 def test_create_applications_list_with_invalid_name(file_path_list, root_folder_part_count, expected_exception_message):
     with pytest.raises(Exception) as exc_info:
@@ -152,10 +152,10 @@ def test_create_applications_list_with_invalid_name(file_path_list, root_folder_
 @pytest.mark.parametrize("file_path_list, root_folder_part_count, expected_exception_message", [
     (['cicd_app_tests/provided_input/sales_and=s/test/application.yaml', 'cicd_app_tests/provided_input/sales/prod/application.yaml'], 2,
      'invalid name: `sales_and=s`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
     (['cicd_app_tests/provided_input/sales/prod/application.yaml', 'cicd_app_tests/provided_input/sales/test_with_a_*/application.yaml'], 2,
      'invalid name: `test_with_a_*`, only alphanumeric values with underscores and dashes are '
-     + 'allowed, starting with an alphanumeric, and a maximum of 64 characters'),
+     + 'allowed, starting with an alphanumeric, and a maximum of 60 characters'),
 ])
 def test_create_applications_dict_with_invalid_name(file_path_list, root_folder_part_count, expected_exception_message):
     with pytest.raises(Exception) as exc_info:

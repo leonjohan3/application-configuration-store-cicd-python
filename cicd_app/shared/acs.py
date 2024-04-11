@@ -1,4 +1,10 @@
 # acs.py
+"""
+Utilities shared by the 3 scripts:
+- build_cloud_formation_file.py
+- create_configuration_profiles.py
+- deploy_configuration_profiles.py
+"""
 import os
 import re
 from pathlib import Path
@@ -17,7 +23,7 @@ def validate_configuration_folder_structure(root_folder):
 
         if S_ISDIR(mode):
             validate_application_folder(pathname)
-            application_folder_count = application_folder_count + 1
+            application_folder_count += 1
 
     if application_folder_count < 1:
         raise Exception(f"ERROR, something is wrong, configuration folder `{root_folder}` does not have any applications defined")
@@ -38,7 +44,7 @@ def validate_application_folder(application_folder):
         if configuration_file_count != 1:
             raise Exception(f"ERROR, something is wrong, environment folder `{pathname}` should contain a configuration file")
 
-        environment_folder_count = environment_folder_count + 1
+        environment_folder_count += 1
 
     if environment_folder_count < 1:
         raise Exception(f"ERROR, something is wrong, application folder `{application_folder}` does not have any environments defined, maybe delete this folder")
@@ -54,7 +60,7 @@ def validate_environment_folder(environment_folder):
         if not S_ISREG(mode) or configuration_file_count > 0:
             raise Exception(f"ERROR, something is wrong, environment folder `{environment_folder}` should contain only a single configuration file")
 
-        configuration_file_count = configuration_file_count + 1
+        configuration_file_count += 1
 
     return configuration_file_count
 
@@ -79,7 +85,7 @@ def add_to_file_list(file, file_list):
 def validate_application_or_environment_name(name):
     if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9_\-]{1,59}$', name):
         raise Exception(f"ERROR, something is wrong, invalid name: `{name}`, only alphanumeric values with"
-                        + " underscores and dashes are allowed, starting with an alphanumeric, and a maximum of 64 characters")
+                        + " underscores and dashes are allowed, starting with an alphanumeric, and a maximum of 60 characters")
 
 
 def parse_file_path_to_get_application_and_environment(file_path):

@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # deploy_configuration_profiles.py
+"""
+Deploys the latest configuration profiles to the AppConfig environments. On application re-start, the latest deployed configurations are fetched from AppConfig
+and used by the application.
+"""
 import re
 
 import boto3

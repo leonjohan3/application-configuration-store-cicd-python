@@ -1,0 +1,111 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Infra resources required for application-configuration-store-cicd
+
+Resources:
+  TheCodeBuildRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - codebuild.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+      - PolicyName: s3-app-config
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Effect: Allow
+            Action: 's3:ListBucket'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref TheS3BucketForCfResources
+          - Effect: Allow
+            Action: 's3:*Object'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref TheS3BucketForCfResources
+                - /*
+          - Effect: Allow
+            Action:
+              - 'appconfig:CreateConfigurationProfile'
+              - 'appconfig:CreateEnvironment'
+              - 'appconfig:CreateHostedConfigurationVersion'
+              - 'appconfig:DeleteApplication'
+              - 'appconfig:DeleteConfigurationProfile'
+              - 'appconfig:DeleteEnvironment'
+              - 'appconfig:DeleteHostedConfigurationVersion'
+              - 'appconfig:GetApplication'
+              - 'appconfig:GetConfiguration'
+              - 'appconfig:GetConfigurationProfile'                 
+              - 'appconfig:GetDeployment'
+              - 'appconfig:GetDeploymentStrategy'
+              - 'appconfig:GetEnvironment'
+              - 'appconfig:GetExtension'
+              - 'appconfig:GetExtensionAssociation'
+              - 'appconfig:GetHostedConfigurationVersion'
+              - 'appconfig:GetLatestConfiguration'
+              - 'appconfig:ListConfigurationProfiles'
+              - 'appconfig:ListDeployments'
+              - 'appconfig:ListEnvironments'
+              - 'appconfig:ListHostedConfigurationVersions'
+              - 'appconfig:ListTagsForResource'
+              - 'appconfig:StartDeployment'
+              - 'appconfig:TagResource'
+              - 'appconfig:UntagResource'
+              - 'appconfig:UpdateApplication'
+              - 'appconfig:UpdateConfigurationProfile'
+              - 'appconfig:UpdateDeploymentStrategy'
+              - 'appconfig:UpdateEnvironment'
+              - 'appconfig:ValidateConfiguration'
+            Resource: !Sub 'arn:aws:appconfig:${AWS::Region}:${AWS::AccountId}:application/acs/*'
+          - Effect: Allow
+            Action:
+              - 'codecommit:GitPull'
+              - 'codecommit:Get*'
+              - 'codecommit:List*'
+              - 'codecommit:UploadArchive'
+              - 'codecommit:GetUploadArchiveStatus'
+              - 'codecommit:CancelUploadArchive'
+            Resource: !Sub 'arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:*'
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*'
+          # - Effect: Allow
+          #   NotAction:
+          #     - 'lambda:AddPermission'
+          #     - 'lambda:PutFunctionConcurrency'
+          #   Resource: !ImportValue sam-employee-directory-lambda-infra-TheLambdaFunction-Arn
+  
+  TheS3BucketForCfResources:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 7
+            Status: Enabled
+
+Outputs:
+  TheS3BucketForCfResources:
+    Description: "The S3 Bucket for the Cloudformation resources"
+    Value: !Ref TheS3BucketForCfResources
+    Export:
+      Name:
+        !Sub '${AWS::StackName}-TheS3BucketForCfResources'
+  TheCodeBuildRole:
+    Description: "The IAM Role used to sync the files in the `root_folder` to AWS AppConfig"
+    Value: !GetAtt TheCodeBuildRole.Arn
+    Export:
+      Name:
+        !Sub '${AWS::StackName}-TheCodeBuildRoleArn'
