@@ -9,13 +9,14 @@ import re
 import boto3
 
 from shared import acs
+from shared.acs import AcsException
 
 __version__ = 0, 0, 1
 
 client = boto3.client('appconfig')
 
 
-def get_deployment_strategy_id():
+def get_deployment_strategy_id() -> str:
     deployment_strategies = client.list_deployment_strategies()
     deployment_strategy_of_interest = None
 
@@ -25,7 +26,7 @@ def get_deployment_strategy_id():
             break
 
     if deployment_strategy_of_interest is None:
-        raise Exception(f"ERROR, something is wrong, the acs deployment_strategy is missing")
+        raise AcsException(f"ERROR, something is wrong, the acs deployment_strategy is missing")
 
     return deployment_strategy_of_interest['Id']
 
@@ -33,20 +34,20 @@ def get_deployment_strategy_id():
 deployment_strategy_id = get_deployment_strategy_id()
 
 
-def deploy_latest_configuration_version(configuration_version, application_name, environment):
+def deploy_latest_configuration_version(configuration_version: dict, application_name: str, environment: dict) -> None:
     result = client.start_deployment(ApplicationId=configuration_version['ApplicationId'], EnvironmentId=environment['Id'],
                                      DeploymentStrategyId=deployment_strategy_id,
                                      ConfigurationProfileId=configuration_version['ConfigurationProfileId'],
                                      ConfigurationVersion=str(configuration_version['VersionNumber']))
 
     if result['State'] != 'COMPLETE':
-        raise Exception(f"ERROR, failure deploying `{environment['Name']}` environment for the `{application_name}` application")
+        raise AcsException(f"ERROR, failure deploying `{environment['Name']}` environment for the `{application_name}` application")
 
     print(f"successfully deployed `{environment['Name']}` environment of the `{application_name}` application to AWS AppConfig"
           + " - application likely requires a re-start to pickup the newly deployed configuration")
 
 
-def process_configuration_version(configuration_version, application_name, environment):
+def process_configuration_version(configuration_version: dict, application_name: str, environment: dict) -> None:
     deployments = client.list_deployments(ApplicationId=configuration_version['ApplicationId'], EnvironmentId=environment['Id'])
     last_deployed_deployment = None
 
@@ -59,7 +60,7 @@ def process_configuration_version(configuration_version, application_name, envir
         deploy_latest_configuration_version(configuration_version, application_name, environment)
 
 
-def process_configuration_profile(configuration_profile, application_name):
+def process_configuration_profile(configuration_profile: dict, application_name: str) -> None:
     environments = client.list_environments(ApplicationId=configuration_profile['ApplicationId'])
     environment = None
 
@@ -67,14 +68,14 @@ def process_configuration_profile(configuration_profile, application_name):
         if environment['Name'] == configuration_profile['Name']:
 
             if environment['State'] != 'ReadyForDeployment':
-                raise Exception(
+                raise AcsException(
                     f"ERROR, something is wrong, the `{environment['Name']}` environment from the `{application_name}` application is not ready for deployment")
 
             environment = environment
             break
 
     if environment is None:
-        raise Exception(
+        raise AcsException(
             f"ERROR, something is wrong, configuration_profile `{configuration_profile['Name']}` for application `{application_name}`" +
             " does not have a corresponding environment")
 
@@ -85,18 +86,18 @@ def process_configuration_profile(configuration_profile, application_name):
         process_configuration_version(configuration_version, application_name, environment)
 
 
-def parse_application_name(application_name):
+def parse_application_name(application_name: str) -> str:
     return re.split('/', application_name)[1]
 
 
-def process_application(application):
+def process_application(application: dict) -> None:
     configuration_profiles = client.list_configuration_profiles(ApplicationId=application['Id'])
 
     for configuration_profile in configuration_profiles['Items']:
         process_configuration_profile(configuration_profile, parse_application_name(application['Name']))
 
 
-def main():
+def main() -> None:
     next_token = None
 
     while True:

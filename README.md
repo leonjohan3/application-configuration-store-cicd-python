@@ -54,12 +54,18 @@ Also see the README.md in the `application configuration store` Git repo.
 - do a perf test with 250 folders with 3 environments each and include max app and env name lengths (to make sure we do not exceed e.g. description lengths that
   uses folder names) [done]
 - decide what to parameterize using env variables, e.g. tags, region, etc.
+- setup GitHub action to run tests when pushing changes to feature branches
 - write integration tests:
   - CFormation deploy, create configuration profiles and deploy configuration profiles, use AWS cli to get config from AppConfig and then compare with files 
   - update 2 config files, add a new project, delete an old project, add a new environment, delete an old environment, and do above
 
 # Other
 
+keeping your Spring Boot microservice's external configuration (properties/yaml) in AWS AppConfig
+
+FAQ
+- what are the costs
+- 
 installing rpms: sudo yum localinstall java-11-amazon-corretto*.rpm
 
   Deployment{{ application.name|capitalize }}{{ environment.name|capitalize }}:

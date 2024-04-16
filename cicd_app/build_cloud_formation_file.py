@@ -28,7 +28,7 @@ from jinja2 import Environment, FileSystemLoader
 from shared import acs
 
 
-def main(root_folder, template_folder):
+def main(root_folder: str, template_folder: str) -> None:
     acs.validate_configuration_folder_structure(root_folder)
     file_path_list = list()
     acs.walk_file_tree(root_folder, acs.add_to_file_list, file_path_list)
