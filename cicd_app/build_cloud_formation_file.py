@@ -26,9 +26,19 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 from shared import acs
+import json
+# from snowflake.snowpark.session import Session
+# import snowflake.snowpark.functions as F
 
 
 def main(root_folder: str, template_folder: str) -> None:
+    # account = 'svc123'
+    #
+    # if account.startswith('svc'):
+    #     asc.use_svc()
+    # else:
+    #     acs.use_other()
+
     acs.validate_configuration_folder_structure(root_folder)
     file_path_list = list()
     acs.walk_file_tree(root_folder, acs.add_to_file_list, file_path_list)
@@ -52,6 +62,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     root_folder_head, root_folder_tail = os.path.split(args.root_folder)
     template_folder_head, template_folder_tail = os.path.split(args.template_folder)
+
+    with open(args.filename, 'r') as f:
+        data = json.load(f)
+    # x = json.load()
 
     main(root_folder_head if not root_folder_tail else os.path.join(root_folder_head, root_folder_tail),
          template_folder_head if not template_folder_tail else os.path.join(template_folder_head, template_folder_tail))

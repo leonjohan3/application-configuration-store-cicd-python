@@ -32,8 +32,8 @@ def get_latest_configuration_version(configuration_profile: dict) -> dict:
 
 def append_configuration_version(configuration_profile: dict, application_name: str, current_configuration_version: int, new_content: str) -> None:
     response = client.create_hosted_configuration_version(ApplicationId=configuration_profile['ApplicationId'], ConfigurationProfileId=configuration_profile['Id'],
-                                                          Description=f'Configuration that will be deployed to the `{application_name}` environment of the '
-                                                                      + f"`{configuration_profile['Name']}` application",
+                                                          Description=f"Configuration that will be deployed to the `{configuration_profile['Name']}` environment "
+                                                                      + f'of the `{application_name}` application',
                                                           Content=new_content, ContentType='text/plain')
 
     if response_has_error(response) or response['VersionNumber'] <= current_configuration_version:

@@ -26,7 +26,7 @@ Resources:
     Properties:
       ApplicationId: !Ref Application{{ application.cf_name|capitalize }}
       Name: {{ environment.name }}
-      Description: {{ environment.name }} environment of the {{ application.name }} application
+      Description: '`{{ environment.name }}` environment of the `{{ application.name }}` application'
 
   ConfigurationProfile{{ application.cf_name|capitalize }}{{ environment.cf_name|capitalize }}:
     Type: AWS::AppConfig::ConfigurationProfile
